@@ -4,12 +4,12 @@ C     Compute the thermal divergence QTL
 C
 C     QTL := div(v) = -1/rho * Drho/Dt
 c
-c     If we use the ideal gas law and assume
-c     that p,R is const we end up with
-c     QTL = 1/(rho*cp) rho*cp*DT/Dt
+c     If we use the modifield volume expansion
+c     coefficient, beta=-1/rho * drho/dh, we get
+c     QTL = beta*Dh/Dt
 C
-C     where rho*cp*DT/Dt represents the RHS of the
-C     energy equation expressed in terms of temperature.
+C     where rho*Dh/Dt represents the RHS of the
+C     energy equation expressed in terms of enthalpy.
 
       include 'SIZE'
       include 'TOTAL'
