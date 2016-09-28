@@ -524,12 +524,14 @@ if [ -f "./SIZE" ]; then
   if [ $? -ne 0 ]; then
      echo >>SIZE
      echo 'c automatically added by makenek' >>SIZE
+     echo '      integer lxo' >> SIZE
      echo '      parameter(lxo   = lx1) ! max output grid size (lxo>=lx1)' >>SIZE
   fi
   cat SIZE | grep -i 'lpart' >/dev/null
   if [ $? -ne 0 ]; then
      echo >>SIZE
      echo 'c automatically added by makenek' >>SIZE
+     echo '      integer lpart' >> SIZE
      echo '      parameter(lpart = 1  ) ! max number of particles/proc' >>SIZE
   fi
   cat SIZE | grep -i 'ax1' >/dev/null
@@ -543,20 +545,23 @@ if [ -f "./SIZE" ]; then
   if [ $? -ne 0 ]; then
      cat SIZE | grep -iv lxs > SIZE.x; mv SIZE.x SIZE  # Clean existing SIZE file of old version
      echo >>SIZE
-     echo 'c automatically added by makenek' >>SIZE
+     echo 'c automatically added by makenek' >> SIZE
+     echo '      integer lxs,lys,lzs' >> SIZE
      echo '      parameter (lxs=1,lys=lxs,lzs=(lxs-1)*(ldim-2)+1) !New Pressure Preconditioner' >> SIZE
 
   fi
   cat SIZE | grep -i 'lfdm' >/dev/null
   if [ $? -ne 0 ]; then
      echo >>SIZE
-     echo 'c automatically added by makenek' >>SIZE
+     echo 'c automatically added by makenek' >> SIZE
+     echo '      integer lfdm' >> SIZE
      echo '      parameter (lfdm=0)  ! == 1 for fast diagonalization method' >> SIZE
   fi
   cat SIZE | grep -i 'nio' >/dev/null
   if [ $? -ne 0 ]; then
      echo >>SIZE
-     echo 'c automatically added by makenek' >>SIZE
+     echo 'c automatically added by makenek' >> SIZE
+     echo '      integer nio' >> SIZE
      echo '      common/IOFLAG/nio  ! for logfile verbosity control' >> SIZE
   fi
 
