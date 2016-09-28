@@ -1,18 +1,16 @@
 C---------------------------------------------------
-      subroutine update_properties
-
+      subroutine update_properties(enth)
+      implicit none
       include 'SIZE'
-      include 'NEKUSE'
-      include 'TOTAL'
 
       integer lxyz,ipoint
       parameter(lxyz=lx1*ly1*lz1)
-      real h
+      real enth(1),h
       real density,viscosity,specificheat,conductivity
       real volexpcoef,volumefraction,temperature
 
       do ipoint=1,lxyz*nelv
-        h=t(ipoint,1,1,1,ifld_h-1)
+        h=enth(ipoint)
         dens(ipoint,1,1,1)=density(h)
         visc(ipoint,1,1,1)=viscosity(h)
         thcap(ipoint,1,1,1)=specificheat(h)
@@ -47,8 +45,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function temperature(h)
-
-      include 'SIZE'
+      implicit none
       include 'FLUIDPROP'
 
       real h,cp
@@ -68,8 +65,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function volumefraction(h)
-
-      include 'SIZE'
+      implicit none
       include 'FLUIDPROP'
 
       real h
@@ -165,8 +161,7 @@ C---------------------------------------------------
       end
 C---------------------------------------------------
       real function density(h)
-
-      include 'SIZE'
+      implicit none
       include 'FLUIDPROP'
 
       real h
@@ -227,8 +222,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function volexpcoef(h) !-(1/rho)(drho/dh)
-
-      include 'SIZE'
+      implicit none
       include 'FLUIDPROP'
 
       real beta_model,dbeta_model,cubicpoly
@@ -288,8 +282,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function viscosity(h)
-
-      include 'SIZE'
+      implicit none
       include 'FLUIDPROP'
 
       real h,alpha,volumefraction
@@ -307,8 +300,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function conductivity(h)
-
-      include 'SIZE'
+      implicit none
       include 'FLUIDPROP'
 
       real h,alpha,volumefraction
@@ -326,8 +318,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function specificheat(h)
-
-      include 'SIZE'
+      implicit none
       include 'FLUIDPROP'
 
       real volumefraction,density
