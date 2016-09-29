@@ -22,11 +22,14 @@ C
       NXD=LXD
       NYD=LYD
       NZD=LZD
-
 C
       NELT=LELT
       NELV=LELV
       NDIM=LDIM
+C
+      NELX=LELX
+      NELY=LELY
+      NELZ=LELZ
 C
       RETURN
       END
