@@ -10,9 +10,11 @@ c     QTL = beta*Dh/Dt
 C
 C     where rho*Dh/Dt represents the RHS of the
 C     energy equation expressed in terms of enthalpy.
+C     Note: beta is stored in the 'vexcoef' array
 
       include 'SIZE'
       include 'TOTAL'
+      include 'FLUIDPROP'
 
       common /scrns/ w1(lx1,ly1,lz1,lelt)
      $              ,w2(lx1,ly1,lz1,lelt)
@@ -51,10 +53,10 @@ c - - Assemble RHS of T-eqn
       call dssum   (qtl,nx1,ny1,nz1)
       call col2    (qtl,binvm1,ntot)
 
-      ! QTL = T_RHS/(rho*cp**T)
+      ! QTL = beta*T_RHS/rho
 
-      call col3    (w2,vtrans(1,1,1,1,2),t,ntot)
-      call invcol2 (qtl,w2,ntot)
+      call invcol2 (qtl,vtrans(1,1,1,1,2),ntot)
+      call col2    (qtl,vexcoef,ntot)
 
       if (ifcvode .and. ifvcor) then
 

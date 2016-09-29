@@ -1,23 +1,22 @@
 C---------------------------------------------------
-      subroutine update_properties
-
+      subroutine update_properties(enth)
+      implicit none
       include 'SIZE'
-      include 'NEKUSE'
-      include 'TOTAL'
+      include 'FLUIDPROP'
 
       integer lxyz,ipoint
       parameter(lxyz=lx1*ly1*lz1)
-      real h
+      real enth(1),h
       real density,viscosity,specificheat,conductivity
       real volexpcoef,volumefraction,temperature
 
       do ipoint=1,lxyz*nelv
-        h=t(ipoint,1,1,1,ifld_h-1)
+        h=enth(ipoint)
         dens(ipoint,1,1,1)=density(h)
         visc(ipoint,1,1,1)=viscosity(h)
         thcap(ipoint,1,1,1)=specificheat(h)
         thcond(ipoint,1,1,1)=conductivity(h)
-        beta(ipoint,1,1,1)=volexpcoef(h)
+        vexcoef(ipoint,1,1,1)=volexpcoef(h)
         volfrac(ipoint,1,1,1)=volumefraction(h)
         temper(ipoint,1,1,1)=temperature(h)
       enddo
@@ -27,7 +26,7 @@ C---------------------------------------------------
 C---------------------------------------------------
       subroutine point_properties(h,ix,iy,iz,e)
       implicit none
-
+      include 'SIZE'
       include 'FLUIDPROP'
 
       real h
@@ -39,7 +38,7 @@ C---------------------------------------------------
       visc(ix,iy,iz,e)=viscosity(h)
       thcap(ix,iy,iz,e)=specificheat(h)
       thcond(ix,iy,iz,e)=conductivity(h)
-      beta(ix,iy,iz,e)=volexpcoef(h)
+      vexcoef(ix,iy,iz,e)=volexpcoef(h)
       volfrac(ix,iy,iz,e)=volumefraction(h)
       temper(ix,iy,iz,e)=temperature(h)
 
@@ -47,7 +46,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function temperature(h)
-
+      implicit none
       include 'SIZE'
       include 'FLUIDPROP'
 
@@ -68,7 +67,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function volumefraction(h)
-
+      implicit none
       include 'SIZE'
       include 'FLUIDPROP'
 
@@ -100,7 +99,7 @@ C---------------------------------------------------
       return
       END
 C---------------------------------------------------
-      real function beta_model(h,h0,b0,r0,h1,b1,r1) !-(1/rho)(drho/dh)
+      real function vexc_model(h,h0,b0,r0,h1,b1,r1) !-(1/rho)(drho/dh)
       implicit none
 
       real h,h0,h1,r0,r1,b0,b1
@@ -109,12 +108,12 @@ C---------------------------------------------------
       K2=6.0d0*log(r1/r0)/(h0-h1)-2.0d0*b1-4.0d0*b0
       K3=6.0d0*log(r1/r0)/(h1-h0)+3.0d0*(b1+b0)
       hstar=(h-h0)/(h1-h0)
-      beta_model=K3*hstar**2+K2*hstar+b0
+      vexc_model=K3*hstar**2+K2*hstar+b0
 
       return
       END
 C---------------------------------------------------
-      real function dbeta_model(h,h0,b0,r0,h1,b1,r1) !-(1/rho)(drho/dh)
+      real function dvexc_model(h,h0,b0,r0,h1,b1,r1) !-(1/rho)(drho/dh)
       implicit none
 
       real h,h0,h1,r0,r1,b0,b1
@@ -123,7 +122,7 @@ C---------------------------------------------------
       K2=6.0d0*log(r1/r0)/(h0-h1)-2.0d0*b1-4.0d0*b0
       K3=6.0d0*log(r1/r0)/(h1-h0)+3.0d0*(b1+b0)
       hstar=(h-h0)/(h1-h0)
-      dbeta_model=(2.0d0*K3*hstar+K2)/(h1-h0)
+      dvexc_model=(2.0d0*K3*hstar+K2)/(h1-h0)
 
       return
       END
@@ -165,12 +164,12 @@ C---------------------------------------------------
       end
 C---------------------------------------------------
       real function density(h)
-
+      implicit none
       include 'SIZE'
       include 'FLUIDPROP'
 
       real h
-      real dens_model,beta_model,dbeta_model,intcubicpoly,volumefraction
+      real dens_model,vexc_model,dvexc_model,intcubicpoly,volumefraction
       real eps,hfm,hfp,hgm,hgp,rhofg,hfg
       real alpha,denom,rhom,dadh,d2adh2,f1,f2,f1p,f2p,rhofm,icp
 
@@ -184,11 +183,11 @@ C---------------------------------------------------
 
       if(h.le.hfm) then
         density=
-     &       dens_model(h,h_l_ref,rho_l_ref,beta_l_ref,h_f,rho_f,beta_f)
+     &       dens_model(h,h_l_ref,rho_l_ref,vexc_l_ref,h_f,rho_f,vexc_f)
       elseif(h.le.hfp) then
-        f1=beta_model(hfm,h_l_ref,beta_l_ref,rho_l_ref,h_f,beta_f,rho_f)
+        f1=vexc_model(hfm,h_l_ref,vexc_l_ref,rho_l_ref,h_f,vexc_f,rho_f)
         f1p=
-     &    dbeta_model(hfm,h_l_ref,beta_l_ref,rho_l_ref,h_f,beta_f,rho_f)
+     &    dvexc_model(hfm,h_l_ref,vexc_l_ref,rho_l_ref,h_f,vexc_f,rho_f)
         denom=1.0d0/(rho_g*(h_g-hfp)+rho_f*(hfp-h_f))
         alpha=rho_f*(hfp-h_f)*denom
         rhom=alpha*rho_g+(1.0d0-alpha)*rho_f
@@ -197,7 +196,7 @@ C---------------------------------------------------
         f2=-rhofg/rhom*dadh
         f2p=(rhofg/rhom*dadh)**2-rhofg/rhom*d2adh2
         rhofm=
-     &     dens_model(hfm,h_l_ref,rho_l_ref,beta_l_ref,h_f,rho_f,beta_f)
+     &     dens_model(hfm,h_l_ref,rho_l_ref,vexc_l_ref,h_f,rho_f,vexc_f)
         icp=intcubicpoly(h,hfm,f1,f1p,hfp,f2,f2p)
         density=rhofm*exp(-(hfp-hfm)*icp)
       elseif(h.le.hgm) then
@@ -211,14 +210,14 @@ C---------------------------------------------------
         d2adh2=2.0d0*rho_f*rho_g*rhofg*hfg*denom**3
         f1=-rhofg/rhom*dadh
         f1p=(rhofg/rhom*dadh)**2-rhofg/rhom*d2adh2
-        f2=beta_model(hgp,h_g,beta_g,rho_g,h_v_ref,beta_v_ref,rho_v_ref)
+        f2=vexc_model(hgp,h_g,vexc_g,rho_g,h_v_ref,vexc_v_ref,rho_v_ref)
         f2p=
-     &    dbeta_model(hgp,h_g,beta_g,rho_g,h_v_ref,beta_v_ref,rho_v_ref)
+     &    dvexc_model(hgp,h_g,vexc_g,rho_g,h_v_ref,vexc_v_ref,rho_v_ref)
         icp=intcubicpoly(h,hgm,f1,f1p,hgp,f2,f2p)
         density=rhom*exp(-(hgp-hgm)*icp)
       elseif(h.le.h_v_ref) then
         density=
-     &       dens_model(h,h_g,rho_g,beta_g,h_v_ref,rho_v_ref,beta_v_ref)
+     &       dens_model(h,h_g,rho_g,vexc_g,h_v_ref,rho_v_ref,vexc_v_ref)
       else
         density=rho_v_ref
       endif
@@ -227,11 +226,11 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function volexpcoef(h) !-(1/rho)(drho/dh)
-
+      implicit none
       include 'SIZE'
       include 'FLUIDPROP'
 
-      real beta_model,dbeta_model,cubicpoly
+      real vexc_model,dvexc_model,cubicpoly
       real h
       real eps,hfm,hfp,hgm,hgp,rhofg,hfg
       real alpha,denom,rhom,dadh,d2adh2,f1,f2,f1p,f2p,rhofm,icp
@@ -246,11 +245,11 @@ C---------------------------------------------------
 
       if(h.le.(hfm)) then !subcooled liquid
         volexpcoef=
-     &       beta_model(h,h_l_ref,beta_l_ref,rho_l_ref,h_f,beta_f,rho_f)
+     &       vexc_model(h,h_l_ref,vexc_l_ref,rho_l_ref,h_f,vexc_f,rho_f)
       elseif(h.le.hfp) then !blending region
-        f1=beta_model(hfm,h_l_ref,beta_l_ref,rho_l_ref,h_f,beta_f,rho_f)
+        f1=vexc_model(hfm,h_l_ref,vexc_l_ref,rho_l_ref,h_f,vexc_f,rho_f)
         f1p=
-     &    dbeta_model(hfm,h_l_ref,beta_l_ref,rho_l_ref,h_f,beta_f,rho_f)
+     &    dvexc_model(hfm,h_l_ref,vexc_l_ref,rho_l_ref,h_f,vexc_f,rho_f)
         denom=1.0d0/(rho_g*(h_g-hfp)+rho_f*(hfp-h_f))
         alpha=rho_f*(hfp-h_f)*denom
         rhom=alpha*rho_g+(1.0d0-alpha)*rho_f
@@ -273,13 +272,13 @@ C---------------------------------------------------
         d2adh2=2.0d0*rho_f*rho_g*rhofg*hfg*denom**3
         f1=-rhofg/rhom*dadh
         f1p=(rhofg/rhom*dadh)**2-rhofg/rhom*d2adh2
-        f2=beta_model(hgp,h_g,beta_g,rho_g,h_v_ref,beta_v_ref,rho_v_ref)
+        f2=vexc_model(hgp,h_g,vexc_g,rho_g,h_v_ref,vexc_v_ref,rho_v_ref)
         f2p=
-     &    dbeta_model(hgp,h_g,beta_g,rho_g,h_v_ref,beta_v_ref,rho_v_ref)
+     &    dvexc_model(hgp,h_g,vexc_g,rho_g,h_v_ref,vexc_v_ref,rho_v_ref)
         volexpcoef=cubicpoly(h,hgm,f1,f1p,hgp,f2,f2p)
       elseif(h.le.h_v_ref) then !superheated vapor
         volexpcoef=
-     &       beta_model(h,h_g,beta_g,rho_g,h_v_ref,beta_v_ref,rho_v_ref)
+     &       vexc_model(h,h_g,vexc_g,rho_g,h_v_ref,vexc_v_ref,rho_v_ref)
       else  !constant density above h_v_ref
         volexpcoef=0.0
       endif
@@ -288,7 +287,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function viscosity(h)
-
+      implicit none
       include 'SIZE'
       include 'FLUIDPROP'
 
@@ -307,7 +306,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function conductivity(h)
-
+      implicit none
       include 'SIZE'
       include 'FLUIDPROP'
 
@@ -326,7 +325,7 @@ C---------------------------------------------------
       END
 C---------------------------------------------------
       real function specificheat(h)
-
+      implicit none
       include 'SIZE'
       include 'FLUIDPROP'
 

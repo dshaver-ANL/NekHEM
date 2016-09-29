@@ -1,7 +1,6 @@
       include 'DXYZ'
       include 'DEALIAS'
       include 'EIGEN'
-      include 'FLUIDPROP'
       include 'GEOM'
       include 'INPUT'
       include 'IXYZ'
