@@ -22,14 +22,11 @@ C
       NXD=LXD
       NYD=LYD
       NZD=LZD
+
 C
       NELT=LELT
       NELV=LELV
       NDIM=LDIM
-C
-      NELX=LELX
-      NELY=LELY
-      NELZ=LELZ
 C
       RETURN
       END
@@ -749,7 +746,7 @@ C-----------------------------------------------------------------------
 
       ts = dnekclock() 
 
-      if(nio.eq.0 .and. igeom.eq.1) 
+      if(nio.eq.0 .and. igeom.eq.2) 
      &   write(6,*) 'Solving for fluid',ifsplit,iftran,ifnav
 
       if (ifsplit) then
@@ -786,9 +783,11 @@ c             - Velocity/stress formulation.
 
       endif
 
-      if(nio.eq.0 .and. igeom.ge.2) 
-     &   write(*,'(4x,i7,1x,1p2e12.4,a)') 
-     &   istep,time,dnekclock()-ts,' Fluid done'
+      if(nio.eq.0 .and. igeom.ge.2) then
+        write(*,'(i11,a21,4x,1p2e13.4)') 
+     &  istep,'Fluid done ',time,dnekclock()-ts
+        write(*,*)
+      endif
 
       return
       end
@@ -817,7 +816,7 @@ C
       ts = dnekclock()
 
       if (nio.eq.0 .and. igeom.eq.1) 
-     &    write(*,'(13x,a)') 'Solving for heat'
+     &    write(*,'(1x,a)') 'Solving for heat'
 
       if (ifcvode) then
 
@@ -847,9 +846,11 @@ C
 
       endif
 
-      if (nio.eq.0 .and. igeom.ge.2)
-     &   write(*,'(4x,i7,1x,1p2e12.4,a)') 
-     &   istep,time,dnekclock()-ts,' Heat done'
+      if (nio.eq.0 .and. igeom.ge.2) then
+        write(*,'(i11,a21,4x,1p2e13.4)') 
+     &    istep,'Heat done ',time,dnekclock()-ts
+        write(*,*)
+      endif
 
 
       return
@@ -1690,9 +1691,8 @@ c     in userf then the true FFX is given by ffx_userf + scale.
 
       scale = delta_flow/base_flow
       scale_vf(icvflow) = scale
-      if (nio.eq.0) write(6,1) istep
-     $   ,time,scale,delta_flow,current_flow,flow_rate,chv(icvflow)
-    1    format(i8,e14.7,1p4e13.5,' volflow',1x,a1)
+      if (nio.eq.0) write(6,1) istep,chv(icvflow),time,scale,delta_flow
+    1    format(i11,11x,'Volflow',1x,a1,':',4x,1p3e13.4)
 
       call add2s2(vx,vxc,scale,ntot1)
       call add2s2(vy,vyc,scale,ntot1)
@@ -1758,8 +1758,8 @@ c
       if (icvflow.eq.3) base_flow = glsc2(vzc,bm1,ntot1)/domain_length
 c
       if (nio.eq.0) write(6,1) 
-     $   istep,base_flow,domain_length,flow_rate,chv(icvflow)
-    1    format(i9,1p3e13.5,' basflow',1x,a1)
+     $   istep,chv(icvflow),base_flow,domain_length,flow_rate
+    1    format(i11,10x,'Baseflow',1x,a1,':',4x,1p3e13.4)
 c
       return
       end

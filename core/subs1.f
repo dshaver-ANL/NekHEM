@@ -163,12 +163,12 @@ c     call copy (dpc,binv,n)
       ifsolv = .false.
 
 
- 2000 format(i12,1x,'Helmholtz3/fluid: no iteration - rbnorm =', 2E13.4)
- 2010 format(i12,1x,'Helmholtz3/ mesh: no iteration - rbnorm =', 2E13.4)
- 3000 format(i12,1x,'Helmholtz3/fluid: ',I6,5E13.4)
- 3010 format(i12,1x,'Helmholtz3/ Mesh: ',I6,5E13.4)
- 3001 format(2i6,' Unconverged Helmholtz3/Fluid: rbnorm =',2E13.6)
- 3011 format(2i6,' Unconverged Helmholtz3/Mesh : rbnorm =',2E13.6)
+ 2000 format(i11,4x,'Helmholtz3/fluid: no iteration - rbnorm =',2ES13.4)
+ 2010 format(i11,4x,'Helmholtz3/ mesh: no iteration - rbnorm =',2ES13.4)
+ 3000 format(i11,4x,'Helmholtz3/fluid:',I4,5ES13.4)
+ 3010 format(i11,4x,'Helmholtz3/ Mesh:',I4,5ES13.4)
+ 3001 format(2i6,' Unconverged Helmholtz3/Fluid: rbnorm =',2ES13.6)
+ 3011 format(2i6,' Unconverged Helmholtz3/Mesh : rbnorm =',2ES13.6)
 
       return
       end

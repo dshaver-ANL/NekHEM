@@ -129,11 +129,11 @@ c         call exact_sol(time, volex, vpex, pex, dpdtex, qtlex, ypex)
 c         ypis = GLMIN (ym1,NTOT1)
 
          IF (NIO.EQ.0) THEN
-            WRITE(6,'(15X,A,1p2e13.4)')
+            WRITE(6,'(15X,A,4x,1p2e13.4)')
      &         'L1/L2 DIV(V)    :',DIV1,DIV2
-            WRITE(6,'(15X,A,1p2e13.4)') 
+            WRITE(6,'(15X,A,4x,1p2e13.4)') 
      &         'L1/L2 QTL       :',QTL1,QTL2
-            WRITE(6,'(15X,A,1p2e13.4)')
+            WRITE(6,'(15X,A,4x,1p2e13.4)')
      &         'L1/L2 DIV(V)-QTL:',DIF1,DIF2
 c            WRITE(6,'(15X,A,1p9e17.8)') 
 c     & 'qtl p0 dp0dt    :',time, QTL1, p0th, dp0thdt, ypis

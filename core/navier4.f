@@ -906,10 +906,11 @@ c     keeping the number of vectors, m, small.
       real b(n),rvar(n,1),h1(n),h2(n),w(n),msk(n)
       integer ivar(1)
       character*6 name6
-      logical ifwt,ifvec
+      logical ifwt,ifvec,ifres
 
       nn = n
       if (ifvec) nn = n*ndim
+      ifres=.false.
 
       call proj_get_ivar
      $   (m,mmx,ixb,ibb,ix,ib,ih1,ih2,ivar,n,ifvec,name6)
@@ -932,7 +933,8 @@ c     Re-orthogonalize basis set w.r.t. new vectors if space has changed.
             call proj_matvec (rvar(jb,1),rvar(jx,1),n,h1,h2,msk,name6)
          enddo
 
-         if (nio.eq.0) write(6,*) 'Reorthogonalize Basis:'
+c        if (nio.eq.0) write(6,*) 'Reorthogonalize Basis:'
+         ifres=.true.
 
          call proj_ortho    ! Orthogonalize X & B basis sets
      $      (rvar(ix,1),rvar(ib,1),n,m,w,ifwt,ifvec,name6)
@@ -948,8 +950,8 @@ c     ixb is pointer to xbar,  ibb is pointer to bbar := A*xbar
       baf = sqrt(baf)
       ratio = bb4/baf
 
-      if (nio.eq.0) write(6,1) istep,bb4,baf,ratio,m,name6
-    1 format(i8,1p3e14.5,i4,1x,a6,' PROJECT')
+      if (nio.eq.0) write(6,1) istep,name6,m,bb4,baf,ratio,ifres
+    1 format(i11,8x,'PROJECT ',a4,':',i4,1p3e13.4,L5)
 
       return
       end

@@ -1743,8 +1743,25 @@ c
       integer e,eg,ez
 c
       melxy = nelx*nely
-c
       nz = nz1*nelz
+
+      if(melxy.lt.1)then
+        if(nio.eq.0)write(*,256)'nelx*nely'
+        return
+      elseif(nelz.lt.1) then
+        if(nio.eq.0)write(*,256)'nelz'
+        return
+      elseif(melxy.gt.lelx*lely) then
+        if(nio.eq.0)write(*,257)'nelx*nely','lelx*lely'
+        return
+      elseif(nelz.gt.lelz) then
+        if(nio.eq.0)write(*,257)'nelz','lelz'
+        return
+      endif
+
+ 256  format(5x,'ERROR: ',a,' must be at least 1!')
+ 257  format(5x,'ERROR: ',a,' must be less than ',a,'!')
+
       call rzero(ua,nz)
       call rzero(w1,nz)
 c

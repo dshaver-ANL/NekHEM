@@ -58,8 +58,8 @@ c     if (.not.iffdm) kfldfdm=-1
 C
       call dssum   (rhs,nx1,ny1,nz1)
       call col2    (rhs,mask,ntot)
-      if (nio.eq.0.and.istep.le.10) 
-     $    write(6,*) param(22),' p22 ',istep,imsh
+c     if (nio.eq.0.and.istep.le.1) 
+c    $    write(6,*) param(22),' p22 ',istep,imsh
       if (param(22).eq.0.or.istep.le.10)
      $    call chktcg1 (tol,rhs,h1,h2,mask,mult,imsh,isd)
 
@@ -796,7 +796,7 @@ c        IF (rbn2.LE.TOL) THEN
             NITER = ITER-1
 c           IF(NID.EQ.0.AND.((.NOT.IFHZPC).OR.IFPRINT))
             if (nio.eq.0)
-     $         write(6,3000) istep,name,niter,rbn2,rbn0,tol
+     $         write(6,3000) istep,name,niter,rbn2,tol,rbn0
             goto 9999
          ENDIF
 c
@@ -827,8 +827,8 @@ c        Generate tridiagonal matrix for Lanczos scheme
       niter = iter-1
 c
       if (nio.eq.0) write (6,3001) istep,niter,name,rbn2,rbn0,tol
- 3000 format(4x,i7,4x,'Hmholtz ',a4,': ',I6,1p6E13.4)
- 3001 format(2i6,' **ERROR**: Failed in HMHOLTZ: ',a4,1p6E13.4)
+ 3000 format(i11,6x,'Helmholtz ',a4,':',I4,1p6E13.4)
+ 3001 format(i3,i6,' **ERROR**: Failed in HMHOLTZ: ',a4,1p6E13.4)
  3002 format(i3,i6,' Helmholtz ',a4,1x,l4,':',1p6E13.4)
  9999 continue
       niterhm = niter
