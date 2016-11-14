@@ -5,3 +5,10 @@
      $      ,BM1LAG(LX1,LY1,LZ1,LELT,LORDER-1)
      $      ,VOLVM1,VOLVM2,VOLTM1,VOLTM2
      $      ,YINVM1(LX1,LY1,LZ1,LELT)
+      real
+     $       BM1   ,  BM2   
+     $      ,BINVM1,  BINTM1
+     $      ,BM2INV,  BAXM1 
+     $      ,BM1LAG
+     $      ,VOLVM1,VOLVM2,VOLTM1,VOLTM2
+     $      ,YINVM1

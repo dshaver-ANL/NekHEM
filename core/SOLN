@@ -2,6 +2,7 @@
       parameter (lvt2  = lx2*ly2*lz2*lelv)
       parameter (lbt1  = lbx1*lby1*lbz1*lbelv)
       parameter (lbt2  = lbx2*lby2*lbz2*lbelv)
+      integer lvt1,lvt2,lbt1,lbt2
 
       parameter (lptmsk = lvt1*(5+2*ldimt) + 4*lbt1)
       parameter (lptsol
@@ -10,12 +11,15 @@
      $         + lbt1*(12 + 3*(lorder-1))
      $         + lbt2*(lorder-1) )
 c    $         + lptmsk )
+      integer lptmsk,lptsol
 
       parameter (lorder2 = max(1,lorder-2) )
+      integer lorder2
 C
 C     Solution and data
 C
       COMMON /BQCB/    BQ     (LX1,LY1,LZ1,LELT,LDIMT)
+      real BQ
 
       COMMON /VPTSOL/  
 c     Can be used for post-processing runs (SIZE .gt. 10+3*LDIMT flds)
@@ -62,6 +66,48 @@ c     Solution data for magnetic field
      $               , BYLAG  (LBX1*LBY1*LBZ1*LBELV,LORDER-1)
      $               , BZLAG  (LBX1*LBY1*LBZ1*LBELV,LORDER-1)
      $               , PMLAG  (LBX2*LBY2*LBZ2*LBELV,LORDER2)
+      real
+     $                 VXLAG  
+     $               , VYLAG  
+     $               , VZLAG  
+     $               , TLAG   
+     $               , VGRADT1
+     $               , VGRADT2
+     $               , ABX1   
+     $               , ABY1   
+     $               , ABZ1   
+     $               , ABX2   
+     $               , ABY2   
+     $               , ABZ2   
+     $               , VDIFF_E
+     $               , VX     
+     $               , VY     
+     $               , VZ     
+     $               , T      
+     $               , VTRANS 
+     $               , VDIFF  
+     $               , BFX    
+     $               , BFY    
+     $               , BFZ    
+     $               , cflf   
+     $               , c_vx    ! characteristics
+     $               , BX     
+     $               , BY     
+     $               , BZ     
+     $               , PM     
+     $               , BMX      ! Magnetic field RHS
+     $               , BMY    
+     $               , BMZ    
+     $               , BBX1    ! Extrapolation terms for
+     $               , BBY1    ! magnetic field rhs
+     $               , BBZ1   
+     $               , BBX2   
+     $               , BBY2   
+     $               , BBZ2   
+     $               , BXLAG  
+     $               , BYLAG  
+     $               , BZLAG  
+     $               , PMLAG  
 
       common /expvis/  nu_star
       real             nu_star
@@ -69,11 +115,14 @@ c     Solution data for magnetic field
       COMMON /CBM2/  
      $                 PR     (LX2,LY2,LZ2,LELV)
      $               , PRLAG  (LX2,LY2,LZ2,LELV,LORDER2)
+      real PR,PRLAG
 c
       COMMON /DIVERG/  QTL    (LX2,LY2,LZ2,LELT)
      $               , USRDIV (LX2,LY2,LZ2,LELT)
+      real QTL,USRDIV
 
       COMMON /P0THERM/ p0th, dp0thdt, gamma0
+      real p0th, dp0thdt, gamma0
 
       COMMON /VPTMSK/  V1MASK (LX1,LY1,LZ1,LELV)
      $               , V2MASK (LX1,LY1,LZ1,LELV)
@@ -87,6 +136,17 @@ c
      $               , B2MASK (LBX1,LBY1,LBZ1,LBELV)
      $               , B3MASK (LBX1,LBY1,LBZ1,LBELV)
      $               , BPMASK (LBX1,LBY1,LBZ1,LBELV)  ! magnetic pressure
+      real             V1MASK 
+     $               , V2MASK 
+     $               , V3MASK 
+     $               , PMASK  
+     $               , TMASK  
+     $               , OMASK  
+     $               , VMULT  
+     $               , TMULT  
+     $               , B1MASK   ! masks for mag. field
+     $               , B2MASK 
+     $               , B3MASK 
 C
 C     Solution and data for perturbation fields
 C
@@ -112,5 +172,28 @@ C
      $              , EXZ2P  (LPX1*LPY1*LPZ1*LPELV,lpert)
      $              ,VGRADT1P(LPX1*LPY1*LPZ1*LPELT,LDIMT,lpert)
      $              ,VGRADT2P(LPX1*LPY1*LPZ1*LPELT,LDIMT,lpert)
+      real            VXP    
+     $              , VYP    
+     $              , VZP    
+     $              , PRP    
+     $              , TP     
+     $              , BQP    
+     $              , BFXP     ! perturbation field RHS
+     $              , BFYP   
+     $              , BFZP   
+     $              , VXLAGP 
+     $              , VYLAGP 
+     $              , VZLAGP 
+     $              , PRLAGP 
+     $              , TLAGP  
+     $              , EXX1P   ! Extrapolation terms for
+     $              , EXY1P   ! perturbation field rhs
+     $              , EXZ1P  
+     $              , EXX2P  
+     $              , EXY2P  
+     $              , EXZ2P  
+     $              ,VGRADT1P
+     $              ,VGRADT2P
 c
       common /ppointr/ jp
+      real jp
