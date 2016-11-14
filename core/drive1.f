@@ -144,6 +144,8 @@ c      COMMON /SCRCG/ DUMM10(LX1,LY1,LZ1,LELT,1)
          if(nio.eq.0) write(6,'(A,/)') ' done :: userchk' 
       endif
 
+      call setprop     ! Do it again, in case anything is set in userchk
+
       if(ifcvode .and. nsteps.gt.0) call cv_init ! Initialize CVODE
 
       call comment
@@ -270,6 +272,7 @@ c-----------------------------------------------------------------------
          if (ifheat .and. .not.ifcvode) call heat   (igeom)
 
          if (igeom.eq.2) then  
+                                call update_properties(t)
                                 call setprop
                                 call qthermal(1)
          endif
